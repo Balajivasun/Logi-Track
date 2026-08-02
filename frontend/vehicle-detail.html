@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGI-TRACK - Vehicle Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .profile-header {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            align-items: center;
+        }
+        .profile-image {
+            width: 200px;
+            height: 150px;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            box-shadow: var(--shadow-md);
+        }
+        .profile-info h1 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+        .profile-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .badge-pill {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .bg-blue { background: #eff6ff; color: var(--primary-color); }
+        .bg-green { background: #ecfdf5; color: var(--success); }
+        .bg-gray { background: #f3f4f6; color: var(--text-muted); }
+
+        .tabs-container {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: #f8fafc;
+        }
+        .tab-btn {
+            padding: 1rem 2rem;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background: #f1f5f9;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background: white;
+        }
+        .tab-content {
+            padding: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .spec-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+        }
+        .spec-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .spec-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>LOGI-TRACK</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="vehicles.html" class="active"><i class="fa-solid fa-truck"></i> Fleet</a></li>
+                <li><a href="drivers.html"><i class="fa-solid fa-users"></i> Drivers</a></li>
+                <li><a href="orders.html"><i class="fa-solid fa-box-open"></i> Orders</a></li>
+                <li><a href="tracking.html"><i class="fa-solid fa-map-location-dot"></i> Live Tracking</a></li>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" onclick="logout()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-profile">
+                    <div class="notification-bell"><i class="fa-solid fa-bell"></i></div>
+                    <div class="avatar">C</div>
+                </div>
+            </header>
+
+            <div class="page-content slide-up">
+                <!-- Vehicle Header -->
+                <div class="profile-header glass-panel">
+                    <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80" alt="Vehicle" id="v-image" class="profile-image">
+                    <div class="profile-info">
+                        <h1 id="v-number">Loading...</h1>
+                        <div class="profile-badges">
+                            <span class="badge-pill bg-blue" id="v-category">Category</span>
+                            <span class="badge-pill bg-green" id="v-status">Status</span>
+                        </div>
+                        <p style="color: var(--text-muted);"><i class="fa-solid fa-user"></i> Driver: <span id="v-driver">Unassigned</span></p>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-container glass-panel">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+                        <button class="tab-btn" onclick="switchTab('trip')">Current Trip</button>
+                        <button class="tab-btn" onclick="switchTab('history')">Trip History</button>
+                        <button class="tab-btn" onclick="switchTab('fuel')">Fuel & Metrics</button>
+                    </div>
+                    
+                    <!-- Overview Tab -->
+                    <div id="tab-overview" class="tab-content active">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Technical Specifications</h3>
+                        <div class="spec-grid">
+                            <div class="spec-item"><div class="spec-label">Manufacturer</div><div class="spec-value" id="s-man">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Model</div><div class="spec-value" id="s-mod">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Year</div><div class="spec-value" id="s-year">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Fuel Type</div><div class="spec-value" id="s-fuel-type">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Capacity (L)</div><div class="spec-value" id="s-cap">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Current Fuel</div><div class="spec-value" id="s-cur">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Odometer (KM)</div><div class="spec-value" id="s-odo">--</div></div>
+                            <div class="spec-item"><div class="spec-label">Mileage (KM/L)</div><div class="spec-value" id="s-mil">--</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Current Trip Tab -->
+                    <div id="tab-trip" class="tab-content">
+                        <div style="text-align:center; padding: 3rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-box-open" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No Active Trip Assigned</p>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="tab-history" class="tab-content">
+                        <p style="color: var(--text-muted);">Trip history records will appear here.</p>
+                    </div>
+
+                    <!-- Fuel Tab -->
+                    <div id="tab-fuel" class="tab-content">
+                        <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                            <canvas id="fuelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script> <!-- Reusing some dashboard functions like toast -->
+    <script src="js/vehicle-detail.js"></script>
+</body>
+</html>

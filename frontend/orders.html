@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGI-TRACK - Order Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .order-table-container {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            background: #1f1f1f;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .order-id {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            width: fit-content;
+        }
+        .status-pending { background: rgba(107, 114, 128, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
+        .status-assigned { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid #3b82f6; }
+        .status-loading { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border: 1px solid #8b5cf6; }
+        .status-intransit { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid var(--warning); }
+        .status-delivered { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
+        
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container fade-in">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>LOGI-TRACK</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="operations.html"><i class="fa-solid fa-bolt"></i> Operations</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="vehicles.html"><i class="fa-solid fa-truck"></i> Fleet</a></li>
+                <li><a href="drivers.html"><i class="fa-solid fa-users"></i> Drivers</a></li>
+                <li><a href="orders.html" class="active"><i class="fa-solid fa-box-open"></i> Orders</a></li>
+                <li><a href="tracking.html"><i class="fa-solid fa-map-location-dot"></i> Live Tracking</a></li>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" onclick="logout()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header slide-down">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="order-search" placeholder="Search orders by customer...">
+                </div>
+                <div class="user-profile">
+                    <div class="notification-bell">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="avatar"><i class="fa-solid fa-building"></i></div>
+                </div>
+            </header>
+
+            <div class="page-content slide-up">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1 class="page-title" style="margin:0;">Order Management</h1>
+                    <button class="btn-primary" style="width: auto; padding: 0.6rem 1.2rem;" onclick="openOrderModal()">
+                        <i class="fa-solid fa-plus"></i> Create Order
+                    </button>
+                </div>
+                
+                <div class="order-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Route</th>
+                                <th>Cargo</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-table-body">
+                            <!-- Orders populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Order Modal -->
+    <div class="modal-overlay hidden" id="order-modal">
+        <div class="modal-content slide-up">
+            <div class="modal-header">
+                <h3 style="color:var(--text-main);">Create New Order</h3>
+                <button class="modal-close" onclick="closeOrderModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="order-form">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="ord-customer" required>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label>Pickup Location (City)</label>
+                        <input type="text" id="ord-pickup" value="Chennai" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Location (City)</label>
+                        <input type="text" id="ord-delivery" value="Coimbatore" required>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label>Material/Cargo</label>
+                        <input type="text" id="ord-material" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (Tons)</label>
+                        <input type="number" step="0.1" id="ord-weight" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="ord-priority" required>
+                        <option value="Normal">Normal</option>
+                        <option value="High">High</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
+
+                <div style="margin: 1.5rem 0; border-top: 1px dashed var(--border-color); padding-top: 1rem;">
+                    <h4 style="margin-bottom: 1rem; color:var(--text-muted);">Resource Assignment</h4>
+                    <div class="form-group">
+                        <label>Assign Vehicle</label>
+                        <select id="ord-vehicle" required>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Driver</label>
+                        <select id="ord-driver" required>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary">Create Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal-overlay hidden" id="status-modal">
+        <div class="modal-content slide-up" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 style="color:var(--text-main);">Update Order Status</h3>
+                <button class="modal-close" onclick="closeStatusModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="status-form">
+                <input type="hidden" id="status-order-id">
+                <div class="form-group">
+                    <label>New Status</label>
+                    <select id="status-select" required>
+                        <option value="Assigned">Assigned</option>
+                        <option value="Loading">Loading</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Update Status</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    <script src="js/api.js"></script>
+    <script src="js/orders.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('company_id');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

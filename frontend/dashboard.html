@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGI-TRACK - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container fade-in">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>LOGI-TRACK</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="operations.html"><i class="fa-solid fa-bolt"></i> Operations</a></li>
+                <li><a href="dashboard.html" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="vehicles.html"><i class="fa-solid fa-truck"></i> Fleet</a></li>
+                <li><a href="drivers.html"><i class="fa-solid fa-users"></i> Drivers</a></li>
+                <li><a href="orders.html"><i class="fa-solid fa-box-open"></i> Orders</a></li>
+                <li><a href="tracking.html"><i class="fa-solid fa-map-location-dot"></i> Live Tracking</a></li>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="#" onclick="logout()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header slide-down">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search analytics...">
+                </div>
+                <div class="user-profile">
+                    <div class="notification-bell">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="avatar"><i class="fa-solid fa-building"></i></div>
+                </div>
+            </header>
+
+            <div class="page-content slide-up">
+                <h1 class="page-title">Analytics Dashboard</h1>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-truck"></i></div>
+                        <div class="kpi-info">
+                            <h3 id="total-vehicles">...</h3>
+                            <p>Total Vehicles</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                        <div class="kpi-info">
+                            <h3 id="vehicles-ontrip">...</h3>
+                            <p>Vehicles On Trip</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="kpi-info">
+                            <h3 id="total-drivers">...</h3>
+                            <p>Total Drivers</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="kpi-info">
+                            <h3 id="active-orders">...</h3>
+                            <p>Active Orders</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card glass-panel" style="grid-column: 1 / -1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 4rem 2rem; color:var(--text-muted);">
+                        <i class="fa-solid fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color); opacity: 0.8;"></i>
+                        <h2 style="color:var(--text-main); margin-bottom: 0.5rem;">Detailed Analytics Generating</h2>
+                        <p>Complete a few trips to populate the real-time visual charts.</p>
+                        <p style="margin-top:0.5rem;">Completed Trips: <strong id="completed-trips" style="color:var(--primary-color);">0</strong></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('company_id');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

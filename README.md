@@ -1,4 +1,4 @@
-# LOGI-TRACK: Fleet Management & Logistics Platform (Version 1)
+# LOGI-TRACK: Fleet Management & Logistics Platform 
 
 LOGI-TRACK is a beginner-friendly Fleet Management and Logistics Platform built using fundamental web technologies.
 
